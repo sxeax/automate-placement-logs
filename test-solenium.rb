@@ -17,8 +17,13 @@ unless (username = ARGV[0]) && (password = ARGV[1])
   password = 'test-password'
 end
 
-driver = Selenium::WebDriver.for :chrome
+
+
+options = Selenium::WebDriver::Chrome::Options.new
+options.add_argument('--headless')
+driver = Selenium::WebDriver.for :chrome, capabilities: options
 wait = Selenium::WebDriver::Wait.new(timeout: 3, interval: 0.5, message: 'Timed out after 3 sec')
+
 driver.navigate.to 'https://mahara.nottingham.ac.uk/'
 
 driver.manage.timeouts.implicit_wait = 500
@@ -50,7 +55,6 @@ sleep 1
 driver.manage.timeouts.implicit_wait = 2
 
 latest_log_title = driver.find_element(class: 'panel-heading')
-puts latest_log_title.text
 
 new_log_title = next_log_title(current_title: latest_log_title.text)
 
