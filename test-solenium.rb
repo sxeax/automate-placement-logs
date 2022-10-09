@@ -1,11 +1,19 @@
 require 'webdrivers'
+require 'time'
 
 def element_present(driver:, class_name:)
   driver.find_elements(class: class_name).size > 0 ? driver.find_element(class: class_name) : nil
 end
 
+def next_log_title(current_title:)
+  log_number = current_title.split[1].to_i
+  log_date = Date.parse(current_title.split[4])
+  new_log_title = "Week #{log_number + 1} Log - #{(log_date + 7).strftime('%d/%m/%Y')}"
+  new_log_title
+end
+
 unless (username = ARGV[0]) && (password = ARGV[1])
-  username = 'test-user'
+  username = 'test-username'
   password = 'test-password'
 end
 
@@ -39,6 +47,13 @@ portfolio_button = driver.find_element(class: 'outer-link')
 portfolio_button.click
 
 sleep 1
+driver.manage.timeouts.implicit_wait = 2
+
+latest_log_title = driver.find_element(class: 'panel-heading')
+puts latest_log_title.text
+
+new_log_title = next_log_title(current_title: latest_log_title.text)
+
 
 edit_button = driver.find_element(xpath: "//a[@title='Edit this page']")
 edit_button.click 
@@ -57,7 +72,7 @@ sleep 1
 
 title_box = driver.find_element(name: 'title')
 title_box.clear
-title_box.send_keys("Test log UID:#{rand(100)}")
+title_box.send_keys(new_log_title)
 
 sleep 2
 
