@@ -1,9 +1,8 @@
 require 'webdrivers'
 require 'time'
 require 'logger'
-require 'mail'
 
-class Driver
+class MaharaDriver
 
   def initialize 
     options = Selenium::WebDriver::Chrome::Options.new
@@ -113,56 +112,3 @@ class Driver
   end
 
 end
-
-d = Driver.new
-
-unless (username = ARGV[0]) && (password = ARGV[1])
-  username = 'testuser'
-  password = 'testpass'
-end
-
-email = 'test-email'
-email_password = 'test-email-pass'
-
-delivery_options = { 
-  :address              => "smtp.gmail.com",
-  :port                 => 587,
-  :domain               => 'localhost',
-  :user_name            => email,
-  :password             => email_password,
-  :authentication       => 'plain',
-  :enable_starttls_auto => true  
-}  
-
-retriever_options = {
-  :address    => "imap.gmail.com",
-  :port       => 993,
-  :user_name  => email,
-  :password   => email_password,
-  :enable_ssl => true
-}
-
-
-Mail.defaults do
-delivery_method :smtp, delivery_options
-retriever_method :imap, retriever_options
-end
-
-lorem_text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc molestie non nunc nec cursus. Mauris nulla quam, bibendum sed blandit eget, vehicula et lectus. Nulla porta, sem in imperdiet tincidunt, mi nibh dictum lacus, nec ullamcorper purus magna nec augue. Maecenas id gravida orci, eget cursus tortor. Sed a feugiat nibh, vitae elementum ante. Nam nibh nibh, porta eget laoreet eget, lacinia eu nunc. Donec ac facilisis sem. Quisque placerat rhoncus augue, vel malesuada felis varius eget. Fusce eu sodales lacus, ac euismod sapien. Donec tincidunt orci sit amet metus hendrerit, in fringilla velit maximus. Aliquam pretium purus at ligula.'
-
-Mail.deliver do
-  from    'seanbutcher17@gmail.com'
-  to      'seanbutcher17@gmail.com'
-  subject 'This is a test email'
-  body    lorem_text
-end
-
-last_email = Mail.last
-
-puts last_email.date.to_s
-puts last_email.subject
-log_description_work = last_email.multipart? ? last_email.parts[last_email.parts.length - 1].decoded : last_email.decoded
-
-puts log_description_work
-
-d.add_log username, password, log_description_work
