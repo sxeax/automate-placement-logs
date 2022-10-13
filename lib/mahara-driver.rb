@@ -5,29 +5,38 @@ require 'logger'
 class MaharaDriver
 
   def initialize 
+    @username = File.readlines('secrets.txt')[1].split[0]
+    @pasword = File.readlines('secrets.txt')[1].split[1]
     options = Selenium::WebDriver::Chrome::Options.new
     options.add_argument('--headless')
+    options.add_argument('--ignore-ssl-errors=yes')
+    options.add_argument('--ignore-certificate-errors')
     @driver = Selenium::WebDriver.for :chrome, capabilities: options
     @driver.manage.timeouts.implicit_wait = 2
+    @driver.manage.window.resize_to(1920, 1080)
+    @driver.manage.window.maximize
     @logger = Logger.new(STDOUT)
   end
 
-  def add_log(username, password, log_description)
-    login username, password
+  def add_log(log_description)
+    login 
     access_portfolio_page
     add_log_entry log_description
+    
+    @driver.save_screenshot("screenshot.png")
+    @driver.current_url
   end
 
   private
-  def login username, password
+  def login 
     @logger.info('About to navigate to Mahara')
     @driver.navigate.to 'https://mahara.nottingham.ac.uk/'
     
     user_box = @driver.find_element(name: 'login_username')
-    user_box.send_keys(username)
+    user_box.send_keys(@username)
     
     password_box = @driver.find_element(name: 'login_password')
-    password_box.send_keys(password)
+    password_box.send_keys(@pasword)
 
     sleep 0.5
 
@@ -66,7 +75,7 @@ class MaharaDriver
     submit_button = @driver.find_element(id: 'addblock_submit')
     submit_button.click 
 
-    sleep 2
+    sleep 0.5
 
     @logger.info('Adding title into title box')
     title_box = @driver.find_element(name: 'title')
@@ -86,7 +95,14 @@ class MaharaDriver
     save_button = @driver.find_elements(xpath: "//*[starts-with(@id, 'instconf_action_configureblockinstance_id_')]")
     save_button[1].click 
 
-    sleep 1
+    sleep 0.5
+
+
+    display_buttons = @driver.find_elements(xpath:"//a")
+    display_button = display_buttons.find { |button| button.text.include? 'Display page'}
+    display_button.click
+
+    sleep 0.5
   end
 
   def clear_cookie_button 
