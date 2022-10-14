@@ -15,3 +15,5 @@ Future improvements to this project:
 - Containerize it! It will help make this project more portable, meaning it could be used on other operating systems and onto the cloud
 - Look at how to deal with environment variables regarding usernames/ passwords. Due to this only running locally I've not had to consider this, but in the future it will be worth looking into
 - Improve the waiting schema in Selenium. Due to the small timebox I have set myself for this project, I used 'sleep' statements rather than waiting within Selenium itself. Although using 'sleep' works, it is quite hack-ish and can be inefficient so more research can be put into implicit/ explicit/ fluent waiting
+
+If any other placement students come across this repo and have the same issue with remembering to create Mahara logs, send me an email at seanbutcher17@gmail.com and I can show you how to get this setup!
