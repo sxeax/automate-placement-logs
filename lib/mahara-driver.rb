@@ -9,8 +9,6 @@ class MaharaDriver
     @pasword = File.readlines('secrets.txt')[1].split[1]
     options = Selenium::WebDriver::Chrome::Options.new
     options.add_argument('--headless')
-    options.add_argument('--ignore-ssl-errors=yes')
-    options.add_argument('--ignore-certificate-errors')
     @driver = Selenium::WebDriver.for :chrome, capabilities: options
     @driver.manage.timeouts.implicit_wait = 2
     @driver.manage.window.resize_to(1920, 1080)
